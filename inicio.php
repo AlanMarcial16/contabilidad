@@ -207,25 +207,27 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 </div>
                                 <br>
                                 <!--CONTENEDOR DE BOTONES AQUÍ-->
+                                <h1 style="text-align: center;"><b>Contabilidad</b></h1>
+                                <br>
+                                <hr>
+                                <br>
                                 <div class="button-container">
-                                    <a href="rh.php">
-                                        <button class="btn btn2">Recursos humanos</button>
+                                    <a href="gastos.php">
+                                        <button class="btn btn2">Gastos</button>
                                     </a>
-                                    <a href="reportes.php">
-                                        <button class="btn btn2">Reportes</button>
+                                    <a href="flujoe.php">
+                                        <button class="btn btn2">Flujo de efectivo</button>
                                     </a>
-                                    <a href="inventario.php">
-                                        <button class="btn btn2">Inventario</button>
+                                    <a href="ventas.php">
+                                        <button class="btn btn2">Ventas</button>
                                     </a>
-                                    <a href="ayb.php">
+                                    <a href="facturación.php">
                                         <button class="btn btn2">A y B</button>
                                     </a>
-                                    <a href="crm.php">
-                                        <button class="btn btn2">CRM</button>
+                                    <a href="#.php">
+                                        <button class="btn btn2">Otro</button>
                                     </a>
-                                    <a href="manto.php">
-                                        <button class="btn btn2">Mantenimiento y Servicios</button>
-                                    </a>
+                                    
                                 </div>
 
                                 
