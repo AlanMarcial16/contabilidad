@@ -7,14 +7,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: index.php");
     exit;
 }
-    include("conexion.php");
-    $con=conectar();
-
-    $sql="SELECT *  FROM reservaciones ORDER BY fecha DESC";
-    $query=mysqli_query($con,$sql);
-
-    $sql2="SELECT *  FROM entrec";
-    $query2=mysqli_query($con,$sql2);
+    
 ?>
 
 <!DOCTYPE html>
@@ -36,6 +29,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         <link rel="stylesheet" href="css/button1.css?v=2">
         <link rel="stylesheet" href="css/estilo4.css?v=2">
         <link rel="stylesheet" href="css/estilo8.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 	    <!-- Template Main Stylesheets -->
 	    <link rel="stylesheet" href="css/contact-form.css" type="text/css">	
         <!--SWEET ALERT-->
@@ -44,6 +39,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         <!--SWEET ALERT-->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="sweetalert2.all.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <!-- Add icon library -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=" crossorigin="anonymous" />
@@ -214,7 +210,110 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 <br>
                                 <hr>
                                 <br>
-                                
+                                <div class="container">
+        <table class="table table-bordered" id="gastos-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Habitación</th>
+                    <th>Área</th>
+                    <th>Descripción</th>
+                    <th>Costo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se llenarán las filas con PHP -->
+                <?php
+                include("conexion.php");
+                $con = conectar();
+
+                $sql = "SELECT * FROM gastos";
+                $query = mysqli_query($con, $sql);
+
+                while ($row = mysqli_fetch_assoc($query)) {
+                    echo "<tr>
+                            <td>{$row['fecha']}</td>
+                            <td>{$row['habitacion']}</td>
+                            <td>{$row['area']}</td>
+                            <td>{$row['descripcion']}</td>
+                            <td>{$row['costo']}</td>
+                            <td><button class='btn btn-danger btn-sm delete-btn'>Eliminar</button></td>
+                          </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+        <button class="btn btn-primary" id="add-row-btn">Agregar Fila</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Agregar una nueva fila al hacer clic en el botón "Agregar Fila"
+            $('#add-row-btn').click(function () {
+                $('#gastos-table tbody').append(`
+                    <tr>
+                        <td><input type="date" class="form-control" name="fecha"></td>
+                        <td><input type="text" class="form-control" name="habitacion"></td>
+                        <td><input type="text" class="form-control" name="area"></td>
+                        <td><input type="text" class="form-control" name="descripcion"></td>
+                        <td><input type="number" class="form-control" name="costo"></td>
+                        <td><button class="btn btn-success btn-sm save-btn">Guardar</button></td>
+                    </tr>
+                `);
+            });
+
+            // Guardar una nueva fila al hacer clic en el botón "Guardar"
+            $(document).on('click', '.save-btn', function () {
+                var row = $(this).closest('tr');
+                var fecha = row.find('input[name="fecha"]').val();
+                var habitacion = row.find('input[name="habitacion"]').val();
+                var area = row.find('input[name="area"]').val();
+                var descripcion = row.find('input[name="descripcion"]').val();
+                var costo = row.find('input[name="costo"]').val();
+
+                // Validar que los campos no estén vacíos
+                if (fecha && habitacion && area && descripcion && costo) {
+                    $.ajax({
+                        url: 'guardar_gasto.php',
+                        type: 'POST',
+                        data: {
+                            fecha: fecha,
+                            habitacion: habitacion,
+                            area: area,
+                            descripcion: descripcion,
+                            costo: costo
+                        },
+                        success: function (response) {
+                            // Reemplazar los inputs con texto una vez que se guarden los datos
+                            row.html(`
+                                <td>${fecha}</td>
+                                <td>${habitacion}</td>
+                                <td>${area}</td>
+                                <td>${descripcion}</td>
+                                <td>${costo}</td>
+                                <td><button class="btn btn-danger btn-sm delete-btn">Eliminar</button></td>
+                            `);
+                        }
+                    });
+                } else {
+                    alert('Por favor, complete todos los campos.');
+                }
+            });
+
+            // Eliminar una fila (puedes añadir la lógica para eliminarla también de la base de datos)
+            $(document).on('click', '.delete-btn', function () {
+                var row = $(this).closest('tr');
+                var fecha = row.find('td').eq(0).text();
+
+                if (confirm('¿Seguro que deseas eliminar este registro?')) {
+                    // Aquí podrías agregar una llamada AJAX para eliminar el registro de la base de datos
+
+                    row.remove(); // Eliminar la fila de la tabla en el frontend
+                }
+            });
+        });
+    </script>
 
                                 
                                 <br><br>
