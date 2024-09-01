@@ -206,23 +206,20 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 </script>
                                 </div>
                                 <br>
+                                <a href="inicio.php">
+                                    <button class="btn info"><i class="fa1 fa fa-arrow-left"></i></button>
+                                </a>
                                 <!--CONTENEDOR DE BOTONES AQUÍ-->
-                                <h1 style="text-align: center;"><b>Contabilidad</b></h1>
+                                <h1 style="text-align: center;"><b>Contabilidad - Flujo de Efectivo</b></h1>
                                 <br>
                                 <hr>
                                 <br>
                                 <div class="button-container">
-                                    <a href="gastos.php">
-                                        <button class="btn btn2">Gastos</button>
+                                    <a href="flujoe.php">
+                                        <button class="btn btn2">Tabla de movimientos</button>
                                     </a>
-                                    <a href="menufe.php">
-                                        <button class="btn btn2">Flujo de efectivo</button>
-                                    </a>
-                                    <a href="ventas.php">
-                                        <button class="btn btn2">Ventas</button>
-                                    </a>
-                                    <a href="facturacion.php">
-                                        <button class="btn btn2">A y B</button>
+                                    <a href="graficosfe.php">
+                                        <button class="btn btn2">Gráficas</button>
                                     </a>
                                     <a href="#.php">
                                         <button class="btn btn2">Otro</button>

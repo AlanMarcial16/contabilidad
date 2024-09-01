@@ -206,29 +206,131 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 </script>
                                 </div>
                                 <br>
+                                <a href="flujoe.php">
+                                    <button class="btn info"><i class="fa1 fa fa-arrow-left"></i></button>
+                                </a>
                                 <!--CONTENEDOR DE BOTONES AQUÍ-->
-                                <h1 style="text-align: center;"><b>Contabilidad</b></h1>
-                                <br>
-                                <hr>
-                                <br>
-                                <div class="button-container">
-                                    <a href="gastos.php">
-                                        <button class="btn btn2">Gastos</button>
-                                    </a>
-                                    <a href="menufe.php">
-                                        <button class="btn btn2">Flujo de efectivo</button>
-                                    </a>
-                                    <a href="ventas.php">
-                                        <button class="btn btn2">Ventas</button>
-                                    </a>
-                                    <a href="facturacion.php">
-                                        <button class="btn btn2">A y B</button>
-                                    </a>
-                                    <a href="#.php">
-                                        <button class="btn btn2">Otro</button>
-                                    </a>
-                                    
-                                </div>
+                                <?php
+// Conexión a la base de datos
+$host = 'localhost';
+$dbname = 'prueba';
+$username = 'root';
+$password = '';
+
+// Crear conexión
+$conexion = mysqli_connect($host, $username, $password, $dbname);
+
+// Verificar conexión
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
+}
+
+// Recuperar el ID desde la URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+if ($id > 0) {
+    // Consulta para obtener la entrada específica por ID
+    $sql = "SELECT * FROM flujoefectivo WHERE id = $id";
+    $resultado = mysqli_query($conexion, $sql);
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $fila = mysqli_fetch_assoc($resultado);
+        $detalle_operacion = $fila['detalle_operacion'];
+    } else {
+        echo "<p>No se encontró la entrada especificada.</p>";
+        exit;
+    }
+} else {
+    echo "<p>ID no válido.</p>";
+    exit;
+}
+?>
+
+<h1 style="text-align: center;"><b>Contabilidad - Flujo de Efectivo</b></h1>
+<br>
+<hr>
+<br>
+
+<!-- Cabecera de la tabla con detalles generales -->
+<table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: center;">
+    <thead>
+        <tr>
+            <th>Fecha Apertura de Caja</th>
+            <th>Fecha Cierre de Caja</th>
+            <th>Monto Inicial</th>
+            <th>Total Entradas</th>
+            <th>Total Salidas</th>
+            <th>Gran Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><?php echo htmlspecialchars($fila['fecha']); ?></td>
+            <td><?php echo htmlspecialchars($fila['fecha_hora_registro']); ?></td>
+            <td><?php echo htmlspecialchars($fila['monto_inicial']); ?></td>
+            <td><?php echo htmlspecialchars($fila['total_entradas']); ?></td>
+            <td><?php echo htmlspecialchars($fila['total_salidas']); ?></td>
+            <td><?php echo htmlspecialchars($fila['gran_total']); ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<br><br>
+
+<!-- Tabla para mostrar el detalle de operaciones -->
+<table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: center;">
+    <thead>
+        <tr>
+            <th>Operación</th>
+            <th>Descripción</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        // Separar las operaciones de la columna detalle_operacion
+        $operaciones = explode("\n", $detalle_operacion);
+
+        foreach ($operaciones as $operacion) {
+            $partes = explode(", ", $operacion);
+
+            // Inicializar las variables
+            $tipo_operacion = '';
+            $descripcion = '';
+            $entrada = '';
+            $salida = '';
+
+            // Asignar los valores de acuerdo a las partes
+            foreach ($partes as $parte) {
+                if (strpos($parte, 'Operacion:') !== false) {
+                    $tipo_operacion = trim(explode(':', $parte)[1]);
+                } elseif (strpos($parte, 'Descripción:') !== false) {
+                    $descripcion = trim(explode(':', $parte)[1]);
+                } elseif (strpos($parte, 'Entrada:') !== false) {
+                    $entrada = trim(explode(':', $parte)[1]);
+                } elseif (strpos($parte, 'Salida:') !== false) {
+                    $salida = trim(explode(':', $parte)[1]);
+                }
+            }
+
+            echo "<tr>";
+            echo "<td>" . htmlspecialchars($tipo_operacion) . "</td>";
+            echo "<td>" . htmlspecialchars($descripcion) . "</td>";
+            echo "<td>" . htmlspecialchars($entrada) . "</td>";
+            echo "<td>" . htmlspecialchars($salida) . "</td>";
+            echo "</tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
+<?php
+// Cerrar la conexión
+mysqli_close($conexion);
+?>
+
+                                
 
                                 
                                 <br><br>

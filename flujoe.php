@@ -206,29 +206,81 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 </script>
                                 </div>
                                 <br>
+                                <a href="menufe.php">
+                                    <button class="btn info"><i class="fa1 fa fa-arrow-left"></i></button>
+                                </a>
                                 <!--CONTENEDOR DE BOTONES AQUÍ-->
-                                <h1 style="text-align: center;"><b>Contabilidad</b></h1>
+                                <h1 style="text-align: center;"><b>Contabilidad - Flujo de efectivo</b></h1>
                                 <br>
                                 <hr>
                                 <br>
-                                <div class="button-container">
-                                    <a href="gastos.php">
-                                        <button class="btn btn2">Gastos</button>
-                                    </a>
-                                    <a href="menufe.php">
-                                        <button class="btn btn2">Flujo de efectivo</button>
-                                    </a>
-                                    <a href="ventas.php">
-                                        <button class="btn btn2">Ventas</button>
-                                    </a>
-                                    <a href="facturacion.php">
-                                        <button class="btn btn2">A y B</button>
-                                    </a>
-                                    <a href="#.php">
-                                        <button class="btn btn2">Otro</button>
-                                    </a>
-                                    
-                                </div>
+                                <?php
+// Conexión a la base de datos
+$host = 'localhost';
+$dbname = 'prueba';
+$username = 'root';
+$password = '';
+
+// Crear conexión
+$conexion = mysqli_connect($host, $username, $password, $dbname);
+
+// Verificar conexión
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
+}
+
+// Consulta para obtener los datos de la tabla flujoefectivo
+$sql = "SELECT * FROM flujoefectivo";
+$resultado = mysqli_query($conexion, $sql);
+
+?>
+
+<!-- Aquí es donde vamos a incluir la vista de la tabla flujoefectivo -->
+<table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: center;">
+    <thead>
+        <tr>
+            <!-- Ajusta los nombres de columnas según los nombres de las columnas en tu tabla -->
+            <th>ID</th>
+            <th>Fecha Apertura Caja</th>
+            <th>FyH Cierre Caja</th>
+            <th>Monto Inicial</th>
+            <th>Total Entradas</th>
+            <th>Total Salidas</th>
+            <th>Gran Total</th>
+            <th>Detalle Operación</th>
+            <th>Acciones</th> <!-- Nueva columna -->
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        // Mostrar los datos en la tabla
+        if (mysqli_num_rows($resultado) > 0) {
+            while($fila = mysqli_fetch_assoc($resultado)) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($fila['id']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['fecha']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['fecha_hora_registro']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['monto_inicial']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['total_entradas']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['total_salidas']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['gran_total']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['detalle_operacion']) . "</td>";
+                // Columna "Acciones" con el botón "Ver detalles"
+                echo "<td><a href='detallefe.php?id=" . urlencode($fila['id']) . "'><button>Ver detalles</button></a></td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='9'>No se encontraron resultados</td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
+<?php
+// Cerrar la conexión
+mysqli_close($conexion);
+?>
+
 
                                 
                                 <br><br>
