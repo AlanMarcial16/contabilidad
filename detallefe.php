@@ -330,6 +330,136 @@ if ($id > 0) {
 mysqli_close($conexion);
 ?>
 
+<br><br>
+
+<?php
+// Conexión a la base de datos
+$host = 'localhost';
+$dbname = 'prueba';
+$username = 'root';
+$password = '';
+
+// Crear conexión
+$conexion = mysqli_connect($host, $username, $password, $dbname);
+
+// Verificar conexión
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
+}
+
+// Recuperar el ID desde la URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+if ($id > 0) {
+    // Consulta para obtener la entrada específica por ID
+    $sql = "SELECT * FROM flujoefectivo WHERE id = $id";
+    $resultado = mysqli_query($conexion, $sql);
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $fila = mysqli_fetch_assoc($resultado);
+        $detalle_operacion = $fila['detalle_operacion'];
+    } else {
+        echo "<p>No se encontró la entrada especificada.</p>";
+        exit;
+    }
+} else {
+    echo "<p>ID no válido.</p>";
+    exit;
+}
+
+// Variables para almacenar los totales por categoría
+$reservaciones = 0;
+$consumos = 0;
+
+// Separar las operaciones de la columna detalle_operacion
+$operaciones = explode("\n", $detalle_operacion);
+
+foreach ($operaciones as $operacion) {
+    $partes = explode(", ", $operacion);
+
+    // Inicializar las variables
+    $tipo_operacion = '';
+    $descripcion = '';
+    $entrada = 0;
+    $salida = 0;
+
+    // Asignar los valores de acuerdo a las partes
+    foreach ($partes as $parte) {
+        if (strpos($parte, 'Operacion:') !== false) {
+            $tipo_operacion = trim(explode(':', $parte)[1]);
+        } elseif (strpos($parte, 'Descripción:') !== false) {
+            $descripcion = trim(explode(':', $parte)[1]);
+        } elseif (strpos($parte, 'Entrada:') !== false) {
+            $entrada = floatval(trim(explode(':', $parte)[1]));
+        } elseif (strpos($parte, 'Salida:') !== false) {
+            $salida = floatval(trim(explode(':', $parte)[1]));
+        }
+    }
+
+    // Clasificar y sumar según los criterios mencionados
+    if ($entrada > 0) { // Solo considerar entradas
+        if (strpos($descripcion, 'Check In') !== false || strpos($descripcion, 'Anticipo') !== false) {
+            $reservaciones += $entrada;
+        } elseif (strpos($descripcion, 'Consumos') !== false) {
+            $consumos += $entrada;
+        }
+    }
+}
+
+// Cerrar la conexión
+mysqli_close($conexion);
+?>
+
+<!-- Sección de las tablas ya existente -->
+<!-- Aquí insertas el código de las tablas que mostraste anteriormente -->
+
+<!-- Nueva sección para la gráfica de pastel con tamaño ajustado -->
+<div style="width: 300px; height: 300px; margin: 0 auto;">
+    <canvas id="graficaPastel" width="300" height="300"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('graficaPastel').getContext('2d');
+    var graficaPastel = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Reservaciones', 'Consumos'],
+            datasets: [{
+                label: 'Distribución de Entradas',
+                data: [<?php echo $reservaciones; ?>, <?php echo $consumos; ?>],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 99, 132, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,  // Desactivar responsividad
+            maintainAspectRatio: false,  // Desactivar relación de aspecto para un control total
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+
                                 
 
                                 
