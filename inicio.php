@@ -215,6 +215,9 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                     <a href="gastos.php">
                                         <button class="btn btn2">Gastos</button>
                                     </a>
+                                    <a href="flujoe.php">
+                                        <button class="btn btn2">Cortes de caja</button>
+                                    </a>
                                     <a href="menufe.php">
                                         <button class="btn btn2">Flujo de efectivo</button>
                                     </a>
