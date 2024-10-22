@@ -255,7 +255,22 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                     <tr>
                         <td><input type="date" class="form-control" name="fecha"></td>
                         <td><input type="text" class="form-control" name="habitacion"></td>
-                        <td><input type="text" class="form-control" name="area"></td>
+                        <td>
+                            <select class="form-control" name="area">
+                                <option value="Amenidades">Amenidades</option>
+                                <option value="Artículos de Limpieza">Artículos de Limpieza</option>
+                                <option value="Blancos">Blancos</option>
+                                <option value="Cocina">Cocina</option>
+                                <option value="Construcción">Construcción</option>
+                                <option value="Eléctrico">Eléctrico</option>
+                                <option value="Gas">Gas</option>
+                                <option value="Grifería">Grifería</option>
+                                <option value="Habitación">Habitación</option>
+                                <option value="Herramienta">Herramienta</option>
+                                <option value="Mobiliario">Mobiliario</option>
+                                <option value="Plomeria">Plomeria</option>
+                            </select>
+                        </td>
                         <td><input type="text" class="form-control" name="descripcion"></td>
                         <td><input type="number" class="form-control" name="costo"></td>
                         <td><button class="btn btn-success btn-sm save-btn">Guardar</button></td>
