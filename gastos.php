@@ -211,43 +211,68 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 <hr>
                                 <br>
                                 <div class="container">
-        <table class="table table-bordered" id="gastos-table">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Habitación</th>
-                    <th>Área</th>
-                    <th>Descripción</th>
-                    <th>Costo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aquí se llenarán las filas con PHP -->
-                <?php
-                include("conexion.php");
-                $con = conectar();
+    <table class="table table-bordered" id="gastos-table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Habitación</th>
+                <th>Departamento</th>
+                <th>Costo</th>
+                <th>Facturado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se llenarán las filas con PHP -->
+            <?php
+            include("conexion.php");
+            $con = conectar();
 
-                $sql = "SELECT * FROM gastos";
-                $query = mysqli_query($con, $sql);
+            $sql = "SELECT * FROM gastos";
+            $query = mysqli_query($con, $sql);
 
-                while ($row = mysqli_fetch_assoc($query)) {
-                    echo "<tr>
-                            <td>{$row['fecha']}</td>
-                            <td>{$row['habitacion']}</td>
-                            <td>{$row['area']}</td>
-                            <td>{$row['descripcion']}</td>
-                            <td>{$row['costo']}</td>
-                            <td><button class='btn btn-danger btn-sm delete-btn'>Eliminar</button></td>
-                          </tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-        <button class="btn btn-primary" id="add-row-btn">Agregar Fila</button>
-    </div>
+            while ($row = mysqli_fetch_assoc($query)) {
+                $facturadoChecked = $row['facturado'] === 'SI' ? 'checked' : '';
+                echo "<tr>
+                        <td>{$row['fecha']}</td>
+                        <td>{$row['descripcion']}</td>
+                        <td>{$row['habitacion']}</td>
+                        <td>{$row['area']}</td>
+                        <td>{$row['costo']}</td>
+                        <td><input type='checkbox' class='facturado-checkbox' data-id='{$row['cod_incidencia']}' $facturadoChecked></td>
+                        <td><button class='btn btn-danger btn-sm delete-btn'>Eliminar</button></td>
+                      </tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+    <button class="btn btn-primary" id="add-row-btn">Agregar Fila</button>
+</div>
 
     <script>
+         $(document).ready(function () {
+        // Código de JavaScript para agregar, guardar y eliminar filas
+
+        // Actualizar facturado al marcar/desmarcar el checkbox
+        $(document).on('change', '.facturado-checkbox', function () {
+            var cod_incidencia = $(this).data('id');
+            var facturado = $(this).is(':checked') ? 'SI' : 'NO';
+
+            $.ajax({
+                url: 'actualizar_facturado.php',
+                type: 'POST',
+                data: {
+                    cod_incidencia: cod_incidencia,
+                    facturado: facturado
+                },
+                success: function (response) {
+                    console.log('Registro actualizado correctamente.');
+                }
+            });
+        });
+    });
+
         $(document).ready(function () {
             // Agregar una nueva fila al hacer clic en el botón "Agregar Fila"
             $('#add-row-btn').click(function () {
