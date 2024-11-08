@@ -210,7 +210,9 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 <br>
                                 <hr>
                                 <br>
+
                                 <div class="container">
+
     <table class="table table-bordered" id="gastos-table">
         <thead>
             <tr>
@@ -279,9 +281,26 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                 $('#gastos-table tbody').append(`
                     <tr>
                         <td><input type="date" class="form-control" name="fecha"></td>
-                        <td><input type="text" class="form-control" name="habitacion"></td>
+                        <td><input type="text" class="form-control" name="descripcion" placeholder="Descripción"></td>
+                        <td>
+                            <select class="form-control" name="habitacion">
+                                <option value="#">Habitación</option>
+                                <option value="Cuna de Moisés">Cuna de Moisés</option>
+                                <option value="Dalia">Dalia</option>
+                                <option value="Bugambilia">Bugambilia</option>
+                                <option value="Tulipan">Tulipan</option>
+                                <option value="Jazmín">Jazmín</option>
+                                <option value="Violeta">Violeta</option>
+                                <option value="Lily">Lily</option>
+                                <option value="Girasol">Girasol</option>
+                                <option value="Margarita">Margarita</option>
+                                <option value="Nochebuena">Nochebuena</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </td>
                         <td>
                             <select class="form-control" name="area">
+                                <option value="#">Área</option>
                                 <option value="Amenidades">Amenidades</option>
                                 <option value="Artículos de Limpieza">Artículos de Limpieza</option>
                                 <option value="Blancos">Blancos</option>
@@ -296,50 +315,58 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 <option value="Plomeria">Plomeria</option>
                             </select>
                         </td>
-                        <td><input type="text" class="form-control" name="descripcion"></td>
-                        <td><input type="number" class="form-control" name="costo"></td>
+                        
+                        <td><input type="int" class="form-control" name="costo" placeholder="Costo"></td>
+                        <!-- Campo oculto para el valor por defecto "NO" de la columna facturado -->
+                        <input type="hidden" name="facturado" value="NO">
                         <td><button class="btn btn-success btn-sm save-btn">Guardar</button></td>
                     </tr>
                 `);
             });
 
             // Guardar una nueva fila al hacer clic en el botón "Guardar"
-            $(document).on('click', '.save-btn', function () {
-                var row = $(this).closest('tr');
-                var fecha = row.find('input[name="fecha"]').val();
-                var habitacion = row.find('input[name="habitacion"]').val();
-                var area = row.find('input[name="area"]').val();
-                var descripcion = row.find('input[name="descripcion"]').val();
-                var costo = row.find('input[name="costo"]').val();
+            // Guardar una nueva fila al hacer clic en el botón "Guardar"
+$(document).on('click', '.save-btn', function () {
+    var row = $(this).closest('tr');
+    var fecha = row.find('input[name="fecha"]').val();
+    var habitacion = row.find('select[name="habitacion"]').val(); // Cambiado a 'select'
+    var area = row.find('select[name="area"]').val();             // Cambiado a 'select'
+    var descripcion = row.find('input[name="descripcion"]').val();
+    var costo = row.find('input[name="costo"]').val();
+    var facturado = row.find('input[name="facturado"]').val();
 
-                // Validar que los campos no estén vacíos
-                if (fecha && habitacion && area && descripcion && costo) {
-                    $.ajax({
-                        url: 'guardar_gasto.php',
-                        type: 'POST',
-                        data: {
-                            fecha: fecha,
-                            habitacion: habitacion,
-                            area: area,
-                            descripcion: descripcion,
-                            costo: costo
-                        },
-                        success: function (response) {
-                            // Reemplazar los inputs con texto una vez que se guarden los datos
-                            row.html(`
-                                <td>${fecha}</td>
-                                <td>${habitacion}</td>
-                                <td>${area}</td>
-                                <td>${descripcion}</td>
-                                <td>${costo}</td>
-                                <td><button class="btn btn-danger btn-sm delete-btn">Eliminar</button></td>
-                            `);
-                        }
-                    });
-                } else {
-                    alert('Por favor, complete todos los campos.');
-                }
-            });
+    // Validar que los campos no estén vacíos
+    if (fecha && habitacion && area && descripcion && costo && facturado) {
+        $.ajax({
+            url: 'guardar_gasto.php',
+            type: 'POST',
+            data: {
+                fecha: fecha,
+                habitacion: habitacion,
+                area: area,
+                descripcion: descripcion,
+                costo: costo,
+                facturado: facturado
+            },
+            success: function (response) {
+                // Reemplazar los inputs con texto una vez que se guarden los datos
+                row.html(`
+                    <td>${fecha}</td>
+                    <td>${descripcion}</td>
+                    <td>${habitacion}</td>
+                    <td>${area}</td>
+                    <td>${costo}</td>
+                    <td>${facturado}</td>
+                    <td><button class="btn btn-danger btn-sm delete-btn">Eliminar</button></td>
+                `);
+            }
+        });
+    } else {
+        alert('Por favor, complete todos los campos.');
+    }
+});
+
+
 
             // Eliminar una fila (puedes añadir la lógica para eliminarla también de la base de datos)
             $(document).on('click', '.delete-btn', function () {

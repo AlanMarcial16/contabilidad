@@ -8,8 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $area = $_POST['area'];
     $descripcion = $_POST['descripcion'];
     $costo = $_POST['costo'];
+    $facturado = $_POST['facturado']; // Recibir el valor de 'facturado'
 
-    $sql = "INSERT INTO gastos (fecha, habitacion, area, descripcion, costo) VALUES ('$fecha', '$habitacion', '$area', '$descripcion', $costo)";
+    $sql = "INSERT INTO gastos (fecha, habitacion, area, descripcion, costo, facturado) 
+            VALUES ('$fecha', '$habitacion', '$area', '$descripcion', $costo, '$facturado')";
     if (mysqli_query($con, $sql)) {
         echo "Registro guardado exitosamente";
     } else {
