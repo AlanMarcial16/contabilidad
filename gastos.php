@@ -210,9 +210,20 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                                 <br>
                                 <hr>
                                 <br>
-
                                 <div class="container">
+    <!-- Filtro de selección de gastos -->
+    <div class="filter-section">
+        <label for="filter">Filtrar gastos:</label>
+        <select id="filter" onchange="applyFilter()">
+            <option value="">Seleccione una opción</option>
+            <option value="todos">Todos los gastos</option>
+            <option value="hoy">Gastos de hoy</option>
+            <option value="semana">Gastos de esta semana</option>
+            <option value="mes">Gastos de este mes</option>
+        </select>
+    </div>
 
+    <!-- Tabla de gastos -->
     <table class="table table-bordered" id="gastos-table">
         <thead>
             <tr>
@@ -225,34 +236,40 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Aquí se llenarán las filas con PHP -->
-            <?php
-            include("conexion.php");
-            $con = conectar();
-
-            $sql = "SELECT * FROM gastos";
-            $query = mysqli_query($con, $sql);
-
-            while ($row = mysqli_fetch_assoc($query)) {
-                $facturadoChecked = $row['facturado'] === 'SI' ? 'checked' : '';
-                echo "<tr>
-                        <td>{$row['fecha']}</td>
-                        <td>{$row['descripcion']}</td>
-                        <td>{$row['habitacion']}</td>
-                        <td>{$row['area']}</td>
-                        <td>{$row['costo']}</td>
-                        <td><input type='checkbox' class='facturado-checkbox' data-id='{$row['cod_incidencia']}' $facturadoChecked></td>
-                        <td><button class='btn btn-danger btn-sm delete-btn'>Eliminar</button></td>
-                      </tr>";
-            }
-            ?>
+        <tbody id="gastos-tbody">
+            <!-- Aquí se llenarán las filas con AJAX -->
         </tbody>
     </table>
     <button class="btn btn-primary" id="add-row-btn">Agregar Fila</button>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function applyFilter() {
+        var filter = document.getElementById("filter").value;
+
+        // Hacer la solicitud AJAX para obtener los datos filtrados
+        $.ajax({
+            url: 'filtrar_gastos.php', // Archivo PHP para manejar la consulta
+            method: 'POST',
+            data: { filter: filter },
+            success: function(response) {
+                // Llenar el cuerpo de la tabla con la respuesta
+                $('#gastos-tbody').html(response);
+            }
+        });
+    }
+
+    // Llamar a la función de filtro al cargar la página para mostrar todos los datos inicialmente
+    $(document).ready(function() {
+        applyFilter();
+    });
+</script>
+
     <script>
+
+
+
          $(document).ready(function () {
         // Código de JavaScript para agregar, guardar y eliminar filas
 
